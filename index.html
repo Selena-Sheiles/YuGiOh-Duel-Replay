@@ -1,0 +1,35 @@
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body onload="init()">
+  <script src="script.js"></script>
+  <div id="fieldState">
+    <div id="player1"></div>
+    <div id="player2"></div>
+  </div>
+  <div id="gameState">
+    <div id="eventsLog"></div>
+    <div id="effects"></div>
+  </div>
+  <div id="console">
+    <div id="buttons">
+      <button id="reset" onclick="loadActionHistory()">Reload</button>
+      <button id="prev" onClick="stepPrev()">Prev</button>
+      <button id="next" onClick="stepNext()">Next</button>
+      <button id="togglePlay" onClick="playAnimation()">Play</button>
+      <input type="number" id="delayDefault">
+    </div>
+    <div id="moreButtons">
+      <button id="undo" onClick="removeAction()">Undo</button>
+      <button id="skip" onClick="skipToEnd()">Skip</button>
+      <button id="reverse" onClick="reversePlayDirection()">Reverse</button>
+    </div>
+    <form id="input" onSubmit="addAction()">
+      <input type="text" id="inputValue" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');">
+      <input type="submit" value="+">
+    </form>
+    <textarea id="actionsLog" placeholder="Paste actions log here..."></textarea>
+  </div>
+</body>

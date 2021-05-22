@@ -1,0 +1,75 @@
+body {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+#fieldState {
+    flex: 3;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    font-size: 14px;
+}
+#gameState {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    font-size: 12px;
+}
+#console {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+#player1, #player2 {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2px 5px;
+    border: 1px solid black;
+    margin: 1px;
+}
+#player2 {
+    margin-left: 0;
+}
+#eventsLog, #effects {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2px 5px;
+    border: 1px solid black;
+    margin: 1px;
+    margin-left: 0;
+}
+#effects {
+    margin-top: 0;
+}
+#buttons, #moreButtons {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+#input {
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+#actionsLog {
+    flex: 1;
+    resize: none;
+    overflow-y: auto;
+    word-break: break-all;
+    font-size: 10px;
+}
+#delayDefault {
+    width: 0px;
+    flex: 1;
+}
+#inputValue {
+    width: 0px;
+    flex: 1;
+}
