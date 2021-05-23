@@ -14,8 +14,13 @@ function showPlayer(id, obj) {
     name.style.fontWeight = "bold";
     temp.appendChild(name);
     obj.data.forEach(data => {
-        drawLine(temp);
-        temp.appendChild(makeDiv(data, 0, ""));
+        if (data.name == "Field") {
+            temp.insertBefore(makeLine(), temp.childNodes[3]);
+            temp.insertBefore(makeDiv(data, 0, ""), temp.childNodes[4]);
+        } else {
+            temp.appendChild(makeLine());
+            temp.appendChild(makeDiv(data, 0, ""));
+        }
     });
 }
 
@@ -27,16 +32,16 @@ function showGameState(id, obj) {
     name.style.fontSize = "14px";
     name.style.fontWeight = "bold";
     temp.appendChild(name);
-    drawLine(temp);
+    temp.appendChild(makeLine());
     if (obj.data != undefined)
         obj.data.forEach(data => temp.appendChild(makeDiv(data, 0, "")));
     temp.scrollTop = temp.scrollHeight;
 }
 
-function drawLine(node) {
+function makeLine() {
     var line = document.createElement("hr");
     line.style.margin = "2px";
-    node.appendChild(line);
+    return line;
 }
 
 function makeDiv(obj, indent, replaceText) {
