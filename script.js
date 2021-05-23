@@ -48,13 +48,19 @@ function resetGameState() {
         player.data = [{
             name: "8000 LP"
         },{
-            name: "Hand"
+            name: "Hand",
+            collapsible: true,
+            isCollapsed: false
         },{
             name: "Field"
         },{
-            name: "Graveyard"
+            name: "Graveyard",
+            collapsible: true,
+            isCollapsed: true
         },{
-            name: "Banished"
+            name: "Banished",
+            collapsible: true,
+            isCollapsed: true
         },{
             name: "Effects"
         }];
@@ -64,91 +70,6 @@ function resetGameState() {
     initPlayer(gameState.data[0]);
     initPlayer(gameState.data[1]);
     show();
-}
-
-function show() {
-    showPlayer("player1", gameState.data[0]);
-    showPlayer("player2", gameState.data[1]);
-    showGameState("eventsLog", gameState.data[2]);
-    showGameState("effects", gameState.data[3]);
-    
-    function showPlayer(id, obj) {
-        var temp = document.getElementById(id);
-        temp.innerHTML = "";
-        var name = document.createElement("span");
-        name.appendChild(document.createTextNode(obj.name));
-        name.style.fontSize = "16px";
-        name.style.fontWeight = "bold";
-        temp.appendChild(name);
-        obj.data.forEach(data => {
-            drawLine(temp);
-            temp.appendChild(makeDiv(data, 0, ""));
-        });
-    }
-    
-    function showGameState(id, obj) {
-        var temp = document.getElementById(id);
-        temp.innerHTML = "";
-        var name = document.createElement("span");
-        name.appendChild(document.createTextNode(obj.name));
-        name.style.fontSize = "14px";
-        name.style.fontWeight = "bold";
-        temp.appendChild(name);
-        drawLine(temp);
-        if (obj.data != undefined)
-            obj.data.forEach(data => temp.appendChild(makeDiv(data, 0, "")));
-        temp.scrollTop = temp.scrollHeight;
-    }
-    
-    function drawLine(node) {
-        var line = document.createElement("hr");
-        line.style.margin = "2px";
-        node.appendChild(line);
-    }
-    
-    function makeDiv(obj, indent, replaceText) {
-        var temp = document.createElement("div");
-        temp.style.textIndent = indent + "px";
-        var name = document.createElement("span");
-        // console.log(obj);
-        var string = obj.name;
-        if (string.endsWith(".") || indent > 20)
-            name.style.fontSize = "12px";
-        if (string.endsWith("."))
-            string = "• " + string;
-        if (replaceText != "") {
-            name.style.fontSize = "12px";
-            name.style.color = "LightGray";
-            string = replaceText;
-        }
-        name.appendChild(document.createTextNode(string));
-        temp.appendChild(name);
-        if (obj.data != undefined) {
-            obj.data.forEach((data, index) => {
-                var replaceText = "";
-                if (data.name == "") {
-                    switch (obj.name) {
-                    case "Hand":
-                    case "Banished":
-                        replaceText = "card";
-                        break;
-                    case "Field":
-                        if (index == 0)
-                            replaceText = "field spell zone";
-                        else if (index <= 5)
-                            replaceText = "spell & trap zone";
-                        else if (index <= 10)
-                            replaceText = "monster zone";
-                        else
-                            replaceText = "extra monster zone";
-                        break;
-                    }
-                }
-                temp.appendChild(makeDiv(data, indent + 20, replaceText));
-            });
-        }
-        return temp;
-    }
 }
 
 function addAction() {
