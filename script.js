@@ -22,10 +22,11 @@ function loadActionHistory() {
             lines.push(line);
         return lines;
     }, []);
-    actionHistory = strings.map(string => JSON.parse(string));
+    actionHistory = strings.map(string => JSON.parse(transformInput(string)));
     actionReverse = [];
     actionIndex = 0;
     actionHistory.forEach(action => {
+        checkAction(action);
         actionReverse.push(reverse(action));
         execute(action);
     });
@@ -81,11 +82,7 @@ function addAction() {
     } else if (input.startsWith("//")) {
         log.value += input + "\n";
     } else try {
-        if (input.startsWith("{") && input.endsWith("}")) {
-            input = "[\"push\",[2],\"" + input.slice(1, -1) + "\"]";
-            console.log(input);
-        }
-        var action = JSON.parse(input);
+        var action = JSON.parse(transformInput(input));
         if (checkAction(action)) {
             executeEverything();
             var revert = reverse(action);

@@ -1,12 +1,31 @@
+function transformInput(input) {
+    if (input.startsWith("{") && input.endsWith("}"))
+        input = "[\"push\",[2],\"" + input.slice(1, -1) + "\"]";
+    if (!input.startsWith("[")) {
+        if (!input.startsWith("\"")) {
+            var x = input.indexOf(" ");
+            input = "\"" + input.slice(0, x) + "\"," + input.slice(x + 1);
+        }
+        input = "[" + input + "]";
+    }
+    return input;
+}
+
 function checkAction(action) {
     try {
         var obj = findObject(action[1]);
         switch (action[0]) {
         case "add":
+            if (typeof action[2] != "number")
+                action.splice(2, 0, action[1].pop());
+            obj = findObject(action[1]);
             if (obj.data.length < action[2])
                 return false;
             break;
         case "erase":
+            if (typeof action[2] != "number")
+                action.splice(2, 0, action[1].pop());
+            obj = findObject(action[1]);
             if (obj.data.length <= action[2])
                 return false;
             if (action[3] != undefined && obj.data.length < action[2] + action[3])
@@ -15,6 +34,9 @@ function checkAction(action) {
         case "rename":
             break;
         case "move":
+            if (typeof action[2] != "number")
+                action.splice(2, 0, action[1].pop());
+            obj = findObject(action[1]);
             if (obj.data.length <= action[2])
                 return false;
             if (action[5] != undefined && obj.data.length < action[2] + action[5])
@@ -47,14 +69,11 @@ function checkAction(action) {
 }
 
 function reverse(action) {
-    try {
-        var obj = findObject(action[1]);
-    } catch (error) {
-        console.log(action[1]);
-    }
+    var obj = findObject(action[1]);
     var revert = JSON.parse(JSON.stringify(action));
     switch (action[0]) {
     case "add":
+        console.log(action);
         revert[0] = "erase";
         if (typeof action[3] == "string")
             revert.pop();
@@ -179,7 +198,7 @@ function findObject(indexArray) {
             index = obj.data.length + index;
         obj = obj.data[index];
     });
-    if (obj.data == undefined)
+    if (obj && obj.data == undefined)
         obj.data = [];
     return obj;
 }
