@@ -20,10 +20,19 @@ function checkAction(action) {
             if (action[5] != undefined && obj.data.length < action[2] + action[5])
                 return false;
             obj = findObject(action[3]);
+            if (action[4] == undefined)
+                action[4] = obj.data.length;
             if (obj.data.length < action[4])
                 return false;
             break;
         case "push":
+            break;
+        case "pop":
+            var count = action[2];
+            if (count == undefined)
+                count = 1;
+            if (obj.data.size < count)
+                return false;
             break;
         case "clear":
             break;
@@ -83,6 +92,13 @@ function reverse(action) {
             revert.pop();
         else 
             revert[2] = action[2].length;
+        break;
+    case "pop":
+        revert[0] = "push";
+        if (typeof action[2] == "number")
+            revert[2] = obj.data.slice(-action[2]).map(data => data.name);
+        else 
+            revert[2] = obj.data.slice(-1)[0].name;
         break;
     case "clear":
         revert[0] = "push";
@@ -158,7 +174,11 @@ function execute(action) {
 
 function findObject(indexArray) {
     var obj = gameState;
-    indexArray.forEach(index => obj = obj.data[index]);
+    indexArray.forEach(index => {
+        if (index < 0)
+            index = obj.data.length + index;
+        obj = obj.data[index];
+    });
     if (obj.data == undefined)
         obj.data = [];
     return obj;
