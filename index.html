@@ -17,21 +17,19 @@
   </div>
   <div id="console">
     <div id="buttons">
-      <button id="reset" onclick="loadActionHistory()">Reload</button>
-      <button id="prev" onClick="stepPrev()">Prev</button>
-      <button id="next" onClick="stepNext()">Next</button>
-      <button id="togglePlay" onClick="playAnimation()">Play</button>
-      <input type="number" id="delayDefault">
+      <button onClick="loadActions()">Load</button>
+      <button onClick="refreshActions()" title="Refresh">&orarr;</button>
+      <button onClick="stepPrev()" title="Prev">&#129032;</button>
+      <button onClick="stepNext()" title="Next">&#129034;</button>
+      <button onClick="reversePlayDirection()" title="Reverse">&rlhar;</button>
+      <button id="togglePlay" onClick="playAnimation()"></button>
+      <input type="number" id="delayDefault" title="Delay (ms)">
     </div>
-    <div id="moreButtons">
-      <button id="undo" onClick="removeAction()">Undo</button>
-      <button id="skip" onClick="skipToEnd()">Skip</button>
-      <button id="reverse" onClick="reversePlayDirection()">Reverse</button>
+    <div id="inputZone">
+      <input type="text" id="inputString" autoComplete="off" readOnly onFocus="this.removeAttribute('readonly');" onKeyDown="addAction(event)">
+      <button title="Upload File"><label for="inputFile">+</label></button>
+      <input type="file" id="inputFile" accept=".txt" onChange="loadFromFile()" style="display: none;">
     </div>
-    <form id="input" onSubmit="addAction()">
-      <input type="text" id="inputValue" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');">
-      <input type="submit" value="+">
-    </form>
     <textarea id="actionsLog" placeholder="Paste actions log here..."></textarea>
   </div>
 </body>

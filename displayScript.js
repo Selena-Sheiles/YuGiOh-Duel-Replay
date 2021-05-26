@@ -33,8 +33,14 @@ function showGameState(id, obj) {
     name.style.fontWeight = "bold";
     temp.appendChild(name);
     temp.appendChild(makeLine());
-    if (obj.data != undefined)
-        obj.data.forEach(data => temp.appendChild(makeDiv(data, 0, "")));
+    if (obj.data != undefined) {
+        obj.data.forEach(data => {
+            if (data.name == "=================" || data.name == "---")
+                temp.appendChild(makeLine());
+            else
+                temp.appendChild(makeDiv(data, 0, "", 10));
+        });
+    }
     temp.scrollTop = temp.scrollHeight;
 }
 
@@ -44,15 +50,14 @@ function makeLine() {
     return line;
 }
 
-function makeDiv(obj, indent, replaceText) {
+function makeDiv(obj, indent, replaceText, defaultIndent = 20) {
     if (obj.collapsible == true)
         return makeDivCollapsible(obj);
     var temp = document.createElement("div");
     temp.style.textIndent = indent + "px";
     var name = document.createElement("span");
-    // console.log(obj);
     var string = obj.name;
-    if (string.endsWith(".") || indent > 20)
+    if (string.endsWith(".") || indent > defaultIndent)
         name.style.fontSize = "12px";
     if (string.endsWith("."))
         string = "• " + string;
@@ -61,30 +66,18 @@ function makeDiv(obj, indent, replaceText) {
         name.style.color = "LightGray";
         string = replaceText;
     }
+    if (string.startsWith("-- ") && string.endsWith(" --")) {
+        string = string.slice(3, -3);
+        temp.style.textAlign = "center";
+    }
+    if (string.startsWith("+ "))
+        string = "\u2BC1" + string.slice(1);
     name.innerText = string;
     temp.appendChild(name);
     if (obj.data != undefined) {
         obj.data.forEach((data, index) => {
-            var replaceText = "";
-            if (data.name == "") {
-                switch (obj.name) {
-                case "Hand":
-                case "Banished":
-                    replaceText = "card";
-                    break;
-                case "Field":
-                    if (index == 0)
-                        replaceText = "field spell zone";
-                    else if (index <= 5)
-                        replaceText = "spell & trap zone";
-                    else if (index <= 10)
-                        replaceText = "monster zone";
-                    else
-                        replaceText = "extra monster zone";
-                    break;
-                }
-            }
-            temp.appendChild(makeDiv(data, indent + 20, replaceText));
+            var replaceText = getReplaceText(obj, data, index);
+            temp.appendChild(makeDiv(data, indent + defaultIndent, replaceText, defaultIndent));
         });
     }
     return temp;
@@ -114,25 +107,7 @@ function makeDivCollapsible(obj) {
     var content = document.createElement("div");
     if (obj.data != undefined) {
         obj.data.forEach((data, index) => {
-            var replaceText = "";
-            if (data.name == "") {
-                switch (obj.name) {
-                case "Hand":
-                case "Banished":
-                    replaceText = "card";
-                    break;
-                case "Field":
-                    if (index == 0)
-                        replaceText = "field spell zone";
-                    else if (index <= 5)
-                        replaceText = "spell & trap zone";
-                    else if (index <= 10)
-                        replaceText = "monster zone";
-                    else
-                        replaceText = "extra monster zone";
-                    break;
-                }
-            }
+            var replaceText = getReplaceText(obj, data, index);
             content.appendChild(makeDiv(data, 20, replaceText));
         });
     }
@@ -155,4 +130,27 @@ function makeDivCollapsible(obj) {
         }
     });
     return result;
+}
+
+function getReplaceText(obj, data, index) {
+    var replaceText = "";
+    if (data.name == "") {
+        switch (obj.name) {
+        case "Hand":
+        case "Banished":
+            replaceText = "card";
+            break;
+        case "Field":
+            if (index == 0)
+                replaceText = "field spell zone";
+            else if (index <= 5)
+                replaceText = "spell & trap zone";
+            else if (index <= 10)
+                replaceText = "monster zone";
+            else
+                replaceText = "extra monster zone";
+            break;
+        }
+    }
+    return replaceText;
 }

@@ -13,9 +13,16 @@ function init() {
     document.getElementById("delayDefault").value = 500;
     isPaused = true;
     playDirection = 1;
+    updatePlayButton();
 }
 
-function loadActionHistory() {
+function loadActions() {
+    refreshActions();
+    resetGameState();
+    actionIndex = 0;
+}
+
+function refreshActions() {
     resetGameState();
     var strings = document.getElementById("actionsLog").value.split("\n").reduce((lines, line) => {
         if (line != "" && !line.startsWith("//"))
@@ -29,8 +36,9 @@ function loadActionHistory() {
         checkAction(action);
         actionReverse.push(reverse(action));
         execute(action);
+        actionIndex++;
     });
-    resetGameState();
+    show();
 }
 
 function resetGameState() {
@@ -73,18 +81,21 @@ function resetGameState() {
     show();
 }
 
-function addAction() {
-    event.preventDefault();
-    var input = this.inputValue.value;
+function addAction(e) {
+    if (e.key != "Enter")
+        return;
+    var inputField = document.getElementById("inputString");
+    var input = inputField.value;
     var log = document.getElementById("actionsLog");
     if (input == "n") {
         log.value += "\n";
     } else if (input.startsWith("//")) {
         log.value += input + "\n";
     } else try {
+        if (actionIndex < actionHistory.length)
+            refreshActions();
         var action = JSON.parse(transformInput(input));
         if (checkAction(action)) {
-            executeEverything();
             var revert = reverse(action);
             execute(action);
             log.value += input + "\n";
@@ -100,38 +111,19 @@ function addAction() {
         alert("invalid syntax");
         return;
     }
-    document.getElementById("input").reset();
-    scrollToBottom();
+    inputField.value = "";
+    log.scrollTop = log.scrollHeight;
     show();
 }
 
-function removeAction() {
-    if (actionHistory.length > 0) {
-        executeEverything();
-        stepPrev();
-        actionHistory.pop();
-        actionReverse.pop();
-    }
-    scrollToBottom();
-    show();
-}
-
-function skipToEnd() {
-    executeEverything();
-    scrollToBottom();
-    show();
-}
-
-function executeEverything() {
-    while (actionIndex < actionHistory.length) {
-        execute(actionHistory[actionIndex]);
-        actionIndex++;
-    }
-}
-
-function scrollToBottom() {
-    var obj = document.getElementById("actionsLog");
-    obj.scrollTop = obj.scrollHeight;
+function loadFromFile() {
+    var files = document.getElementById("inputFile").files;
+    var blob = new Blob([files[0]]);
+    blob.text().then(string => {
+        var log = document.getElementById("actionsLog");
+        log.value = string;
+        loadActions();
+    });
 }
 
 function stepPrev() {
@@ -152,12 +144,12 @@ function stepNext() {
 
 function reversePlayDirection() {
     playDirection = -playDirection;
+    updatePlayButton();
 }
 
 function playAnimation() {
     isPaused = false;
-    document.getElementById("togglePlay").onclick = pauseAnimation;
-    document.getElementById("togglePlay").innerHTML = "Pause";
+    updatePlayButton();
     (function loop() {
         new Promise((resolve, reject) => {
             var action = null;
@@ -189,7 +181,24 @@ function playAnimation() {
 
 function pauseAnimation() {
     isPaused = true;
-    document.getElementById("togglePlay").onclick = playAnimation;
-    document.getElementById("togglePlay").innerHTML = "Play";
+    updatePlayButton();
     show();
+}
+
+function updatePlayButton() {
+    var obj = document.getElementById("togglePlay");
+    if (isPaused) {
+        obj.onclick = playAnimation;
+        if (playDirection > 0) {
+            obj.innerHTML = "&#9654;";
+            obj.title = "Play \uD83E\uDC1A";
+        } else {
+            obj.innerHTML = "&#9664;";
+            obj.title = "Play \uD83E\uDC18";
+        }
+    } else {
+        obj.onclick = pauseAnimation;
+        obj.innerHTML = "&#10074;&#10074;";
+        obj.title = "Pause";
+    }
 }
